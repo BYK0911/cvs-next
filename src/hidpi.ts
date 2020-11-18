@@ -1,5 +1,5 @@
 
-// canvas which is processed
+// canvas processed
 const processedCanvasMap = new WeakMap()
 
 /**

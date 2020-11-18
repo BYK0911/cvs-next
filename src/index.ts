@@ -1,6 +1,15 @@
 import { CanvasRenderingContext2D } from "canvas";
 import createCanvas from "./createCanvas";
 
+interface MutipleLineTextSettings{
+  width: number;
+  height?: number;
+  overflow?: 'auto' | 'hidden';
+  lineHeight?: number;
+  breakWord?: true;
+  align?: 'left' | 'center' | 'right';
+  vAlign?: 'top' | 'middle' | 'bottom';
+}
 export class Painter {
   canvas = createCanvas();
   ctx = this.canvas.getContext('2d') as CanvasRenderingContext2D;
@@ -41,6 +50,105 @@ export class Painter {
   measureTextWidth (text: string): number {
     return this.ctx.measureText(text).width
   }
+
+  lineWidth (n: number): Painter {
+    this.ctx.lineWidth = n;
+
+    return this;
+  }
+
+  polyline (points: number[]): Painter {
+    const len = points.length;
+    if (len >= 4 && len % 2 === 0) {
+      this.ctx.moveTo(points[0], points[1])
+
+      for (let i = 2; i < len; i += 2) {
+        this.ctx.lineTo(points[i], points[i + 1])
+      }
+    }
+    return this
+  }
+
+  mutipleLineText (text: string, x: number, y: number, options: MutipleLineTextSettings) {
+    const originalAlign = this.ctx.textAlign;
+    const originalBaseline = this.ctx.textBaseline;
+    const fontSize = this.fontSize()
+
+    const {
+      width = 500,
+      lineHeight = fontSize,
+      breakWord = false,
+      overflow = 'hidden',
+      align = 'left',
+      vAlign = 'top'
+    } = options
+
+    const words = text.split(breakWord ? '' : ' ')
+    const lines = []
+    let currentLine = ''
+
+    while(words.length) {
+      const next = words.shift()
+      // if (!currentLine && next == ' ') continue
+      const tw = this.measureTextWidth(currentLine + next)
+      if (tw > width) {
+        if (currentLine === '') {
+          lines.push(next)
+        } else {
+          lines.push(currentLine)
+          currentLine = next
+        }
+      } else {
+        currentLine += next
+      }
+    }
+
+    if (currentLine) lines.push(currentLine)
+
+    if (lines.length === 0) return this
+
+    const H = lines.length * lineHeight
+    const height = options.height || H
+    const x0 = align === 'left' ? x : align === 'center' ? x - width / 2 : x - width;
+    let y0 = vAlign === 'top' ? y : vAlign === 'middle' ? y - H / 2 : y - H;
+    const _y0 = vAlign === 'top' ? y : vAlign === 'middle' ? y - height / 2 : y - height;
+    y0 += (lineHeight - fontSize) / 2
+
+    if (overflow === 'hidden') {
+      this.ctx.save()
+      this.ctx.beginPath();
+      this.ctx.rect(x0, _y0, width, height);
+      this.ctx.closePath();
+      this.ctx.clip();
+    }
+
+    this.set({
+      textAlign: 'left',
+      textBaseline: 'top'
+    })
+    lines.forEach((l, i) => {
+      this.ctx.fillText(l, x0, y0 + i * lineHeight);
+    })
+
+    if (overflow === 'hidden') {
+      this.ctx.restore();
+    }
+
+    this.set({
+      textAlign: originalAlign,
+      textBaseline: originalBaseline
+    })
+
+    console.log('multiple line text')
+
+    return this
+  }
+
+  fontSize (): number {
+    const re = /(\d+)(px|em|rem|pt)/;
+    const size = this.ctx.font.match(re)[1];
+    return +size;
+  }
 }
 
 // chain method
@@ -59,7 +167,7 @@ const chainMethodMap = [
   'arc',
   'arcTo',
   'besizerCurveTo',
-  'qudraticCurveTo',
+  'quadraticCurveTo',
   'transform',
   'translate',
   'scale',
@@ -67,17 +175,22 @@ const chainMethodMap = [
   'save',
   'restore',
   'fillText',
-  'strokeText'
+  'strokeText',
+  'setLineDash'
 ]
 
 const aliasMap = {
-  'beginPath': 'begin',
-  'closePath': 'close',
+  'beginPath': ['begin', 'start'],
+  'closePath': ['close', 'end'],
   'clearReact': 'clear',
   'moveTo': 'mt',
   'lineTo': 'lt',
-  'translate': 'move',
-  'measureTextWidth': 'tw'
+  'translate': ['move', 'mv'],
+  'measureTextWidth': 'tw',
+  'quadraticCurveTo': 'qt',
+  'besizerCurveTo': 'ct',
+  'lineWidth': 'lw',
+  'setLineDash': ['lineDash', 'dash']
 }
 
 chainMethodMap.forEach(fn => {
@@ -89,5 +202,12 @@ chainMethodMap.forEach(fn => {
 })
 
 for (let k in aliasMap) {
-  Painter.prototype[aliasMap[k as keyof typeof aliasMap]] = Painter.prototype[k]
+  let alias = aliasMap[k as keyof typeof aliasMap]
+  if (typeof alias == 'string') {
+    Painter.prototype[alias] = Painter.prototype[k]
+  } else {
+    alias.forEach(a => {
+      Painter.prototype[a] = Painter.prototype[k]
+    })
+  }
 }

@@ -7,6 +7,8 @@
     "forceConsistentCasingInFileNames": true,
     "noImplicitAny": true, // 是否默认禁用 any
     "outDir": "./lib", // 输出目录
+    "declaration": true,
+    "declarationDir": "types",
     "allowJs": true, // 允许编译javascript文件。
     "moduleResolution": "node"
   },

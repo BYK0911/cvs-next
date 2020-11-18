@@ -29,6 +29,13 @@ p.fillRect(0, 0, 500, 500)
     font: '50px xingkai',
   })
   .fillText('包宇坤', 200, 100)
+  .set('strokeStyle', '#0af')
+  .lw(2)
+  .dash([5, 5])
+  .begin()
+  .polyline([10, 10, 390, 10, 390, 190, 10, 190])
+  .close()
+  .stroke()
 
 const filePath = path.resolve(__dirname, '../public/test.png');
 const out = fs.createWriteStream(filePath);
