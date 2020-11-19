@@ -28,14 +28,21 @@ p.fillRect(0, 0, 500, 500)
     fillStyle: '#f00',
     font: '50px xingkai',
   })
-  .fillText('包宇坤', 200, 100)
-  .set('strokeStyle', '#0af')
-  .lw(2)
-  .dash([5, 5])
-  .begin()
-  .polyline([10, 10, 390, 10, 390, 190, 10, 190])
-  .close()
-  .stroke()
+  .fillText('包宇坤', 120, 100)
+    .set('strokeStyle', '#0af')
+    .lw(2)
+    .dash([5, 5])
+    .begin()
+    .polyline([10, 10, 390, 10, 390, 190, 10, 190])
+    .close()
+    .stroke()
+    .set({
+      fillStyle: '#666',
+      font: '14px xingkai'
+    })
+    .text('这是一段非常长的句子，很有可能会换行显示，限制宽度为100px，超出后会换行', 220, 60, { width: 160, breakWord: true, lineHeight: 20 })
+    .text('自动缩放', 100, 120, { wrap: false, autoScale: true, width: 100, height: 50 })
+    .text('自动缩放', 100, 120, { wrap: false, width: 100, height: 50 })
 
 const filePath = path.resolve(__dirname, '../public/test.png');
 const out = fs.createWriteStream(filePath);

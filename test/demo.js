@@ -35,6 +35,8 @@ document.body.onload = () => {
       fillStyle: '#666',
       font: '14px xingkai'
     })
-    .mutipleLineText('这是一段非常长的句子，很有可能会换行显示，限制宽度为100px，超出后会换行', 220, 60, { width: 160, breakWord: true, lineHeight: 20 })
+    .text('这是一段非常长的句子，很有可能会换行显示，限制宽度为100px，超出后会换行', 220, 60, { width: 160, breakWord: true, lineHeight: 20 })
+    .text('自动缩放', 100, 120, { wrap: false, autoScale: true, width: 100, height: 50 })
+    .text('自动缩放', 100, 120, { wrap: false, width: 100, height: 50 })
 }
 document.body.appendChild(p.canvas)

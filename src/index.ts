@@ -1,12 +1,14 @@
 import { CanvasRenderingContext2D } from "canvas";
 import createCanvas from "./createCanvas";
 
-interface MutipleLineTextSettings{
-  width: number;
+interface TextSettings{
+  width?: number;
   height?: number;
+  autoScale?: boolean;
+  wrap?: boolean;
+  breakWord?: boolean;
   overflow?: 'auto' | 'hidden';
   lineHeight?: number;
-  breakWord?: true;
   align?: 'left' | 'center' | 'right';
   vAlign?: 'top' | 'middle' | 'bottom';
 }
@@ -69,7 +71,71 @@ export class Painter {
     return this
   }
 
-  mutipleLineText (text: string, x: number, y: number, options: MutipleLineTextSettings) {
+  text (content: string, x: number, y: number, options: TextSettings): Painter {
+    const { autoScale = false, wrap = true } = options
+    if (wrap && options.width) return this.mutipleLineText(content, x, y, options);
+    if (autoScale && (options.width || options.height)) return this.autoScaleText(content, x, y, options);
+
+    const fontSize = this.fontSize()
+    const {
+      width = this.measureTextWidth(content),
+      lineHeight = fontSize,
+      align = 'left',
+      vAlign = 'top',
+      overflow = 'hidden'
+    } = options
+    const height = options.height || lineHeight;
+
+    const x0 = align === 'left' ? x : align === 'center' ? x - width / 2 : x - width;
+    const y0 = vAlign === 'top' ? y : vAlign === 'middle' ? y - height / 2 : y - height;
+
+    this.ctx.save();
+    this.set({
+      textAlign: 'left',
+      textBaseline: 'top'
+    })
+    if (overflow === 'hidden') {
+      this.ctx.beginPath();
+      this.ctx.rect(x0, y0, width, height);
+      this.ctx.closePath();
+      this.ctx.clip();
+    }
+    this.ctx.fillText(content, x0, y0);
+    this.ctx.restore();
+
+    return this;
+  }
+
+  autoScaleText (text: string, x: number, y: number, options: TextSettings): Painter {
+    const fontSize = this.fontSize()
+    let {
+      width,
+      height,
+      lineHeight = fontSize,
+      align = 'left',
+      vAlign = 'top'
+    } = options
+
+    const tw = this.measureTextWidth(text);
+    if (width === undefined) width = height / lineHeight * tw;
+    if (height === undefined) height = fontSize * width / tw;
+    const x0 = align === 'left' ? x : align === 'center' ? x - width / 2 : x - width;
+    const y0 = vAlign === 'top' ? y : vAlign === 'middle' ? y - height / 2 : y - height;
+
+    this.ctx.save();
+    this.set({
+      textAlign: 'left',
+      textBaseline: 'top'
+    })
+    this.ctx.translate(x0, y0);
+    this.ctx.scale(width / tw, height / lineHeight);
+    this.ctx.fillText(text, 0, 0);
+    this.ctx.restore();
+
+    return this;
+  }
+
+  mutipleLineText (text: string, x: number, y: number, options: TextSettings): Painter {
     const originalAlign = this.ctx.textAlign;
     const originalBaseline = this.ctx.textBaseline;
     const fontSize = this.fontSize()
@@ -138,8 +204,6 @@ export class Painter {
       textAlign: originalAlign,
       textBaseline: originalBaseline
     })
-
-    console.log('multiple line text')
 
     return this
   }

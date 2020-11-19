@@ -1,10 +1,12 @@
 import { CanvasRenderingContext2D } from "canvas";
-interface MutipleLineTextSettings {
-    width: number;
+interface TextSettings {
+    width?: number;
     height?: number;
+    autoScale?: boolean;
+    wrap?: boolean;
+    breakWord?: boolean;
     overflow?: 'auto' | 'hidden';
     lineHeight?: number;
-    breakWord?: true;
     align?: 'left' | 'center' | 'right';
     vAlign?: 'top' | 'middle' | 'bottom';
 }
@@ -19,7 +21,9 @@ export declare class Painter {
     measureTextWidth(text: string): number;
     lineWidth(n: number): Painter;
     polyline(points: number[]): Painter;
-    mutipleLineText(text: string, x: number, y: number, options: MutipleLineTextSettings): this;
+    text(content: string, x: number, y: number, options: TextSettings): Painter;
+    autoScaleText(text: string, x: number, y: number, options: TextSettings): Painter;
+    mutipleLineText(text: string, x: number, y: number, options: TextSettings): Painter;
     fontSize(): number;
 }
 export {};
