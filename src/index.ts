@@ -7,7 +7,7 @@ interface TextSettings{
   autoScale?: boolean;
   wrap?: boolean;
   breakWord?: boolean;
-  overflow?: 'auto' | 'hidden';
+  overflow?: 'visible' | 'hidden';
   lineHeight?: number;
   align?: 'left' | 'center' | 'right';
   vAlign?: 'top' | 'middle' | 'bottom';
@@ -213,6 +213,22 @@ export class Painter {
     const size = this.ctx.font.match(re)[1];
     return +size;
   }
+
+  createImageData (w: number, h: number) {
+    return this.ctx.createImageData(w, h);
+  }
+
+  createRadialGradient (x0: number, y0: number, r0: number, x1: number, y1: number, r1: number) {
+    return this.ctx.createRadialGradient(x0, y0, r0, x1, y1, r1);
+  }
+
+  createLinearGradient (x0: number, y0: number, x1: number, y1: number) {
+    return this.ctx.createLinearGradient(x0, y0, x1, y1);
+  }
+
+  createPattern () {
+    return this.ctx.createPattern(...arguments);
+  }
 }
 
 // chain method
@@ -240,7 +256,8 @@ const chainMethodMap = [
   'restore',
   'fillText',
   'strokeText',
-  'setLineDash'
+  'setLineDash',
+  'drawImage'
 ]
 
 const aliasMap = {
@@ -251,10 +268,13 @@ const aliasMap = {
   'lineTo': 'lt',
   'translate': ['move', 'mv'],
   'measureTextWidth': 'tw',
-  'quadraticCurveTo': 'qt',
-  'besizerCurveTo': 'ct',
+  'quadraticCurveTo': ['qt', 'q'],
+  'besizerCurveTo': ['ct', 'c'],
   'lineWidth': 'lw',
-  'setLineDash': ['lineDash', 'dash']
+  'setLineDash': ['lineDash', 'dash'],
+  'createLinearGradient': ['linearGradient', 'lg'],
+  'createRadialGradient': ['radialGradient', 'rg'],
+  'createPattern': 'pattern'
 }
 
 chainMethodMap.forEach(fn => {
