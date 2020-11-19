@@ -18,18 +18,20 @@ exports.render = function (p) {
     .move(200, 100)
     .rotate(Math.PI / 6)
     .set({
-      fillStyle: '#555',
+      fillStyle: '#333',
       font: '50px Arial',
     })
     .fillText('Hanshow', 0, 0)
     .restore()
     .set({
-      fillStyle: '#ddd',
-      font: '30px Arial',
+      fillStyle: '#999',
+      font: '18px xingkai',
+      textAlign: 'right',
+      textBaseline: 'bottom'
     })
-    .fillText('Hanshow', 80, 30)
+    .fillText('汉朔电子科技有限公司', 390, 42)
     
-    .set('strokeStyle', '#000')
+    .set('strokeStyle', '#ddd')
     .begin()
     .polyline([0, 50, 400, 50])
     .stroke()
@@ -38,14 +40,13 @@ exports.render = function (p) {
     .set({
       fillStyle: '#f00',
       font: '50px xingkai',
+      textAlign: 'center',
+      textBaseline: 'middle'
     })
     .fillText('包宇坤', 120, 100)
-    .set('fillStyle', '#fff')
+    .set('fillStyle', '#ccc')
     .text('电子价签产品线', 120, 130, { wrap: false, autoScale: true, width: 160, align: 'center' })
 
-    .set({
-      fillStyle: '#ddd',
-      font: '14px xingkai'
-    })
-    .text('应用软件组 职位：Web前端开发工程师 手机号：187****7270 邮箱：bykmail1992@163.com', 220, 110, { width: 160, lineHeight: 24, vAlign: 'middle' })
+    .set({ font: '14px xingkai' })
+    .text('应用软件组 职位：Web前端开发工程师 手机号：18730647270 邮箱：bykmail1992@163.com', 230, 120, { width: 160, lineHeight: 24, vAlign: 'middle' })
 }

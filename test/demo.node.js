@@ -1,6 +1,6 @@
 const path = require('path');
 const fs = require('fs')
-const { registerFont } = require('canvas');
+const { registerFont, loadImage } = require('canvas');
 const { Painter } = require('../lib');
 const { render } = require('./render');
 
@@ -10,9 +10,13 @@ registerFont(fontPath, { family: 'xingkai' })
 
 render(p);
 
-const filePath = path.resolve(__dirname, '../public/test.png');
-const out = fs.createWriteStream(filePath);
-const stream = p.canvas.createPNGStream();
+loadImage(path.resolve(__dirname, '../public/logo.png')).then(img => {
+  p.img(img, 10, 14, 120, 24);
 
-stream.pipe(out);
-out.on('finish', () =>  console.log('The PNG file was created.'));
+  const filePath = path.resolve(__dirname, '../public/test.png');
+  const out = fs.createWriteStream(filePath);
+  const stream = p.canvas.createPNGStream();
+  
+  stream.pipe(out);
+  out.on('finish', () =>  console.log('The PNG file was created.'));
+})

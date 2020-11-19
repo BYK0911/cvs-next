@@ -1,6 +1,7 @@
 import { CanvasRenderingContext2D } from "canvas";
 import createCanvas from "./createCanvas";
 
+export { binary, dithering } from './util/filter';
 interface TextSettings{
   width?: number;
   height?: number;
@@ -257,7 +258,8 @@ const chainMethodMap = [
   'fillText',
   'strokeText',
   'setLineDash',
-  'drawImage'
+  'drawImage',
+  'putImageData'
 ]
 
 const aliasMap = {
@@ -274,7 +276,8 @@ const aliasMap = {
   'setLineDash': ['lineDash', 'dash'],
   'createLinearGradient': ['linearGradient', 'lg'],
   'createRadialGradient': ['radialGradient', 'rg'],
-  'createPattern': 'pattern'
+  'createPattern': 'pattern',
+  'drawImage': ['image', 'img']
 }
 
 chainMethodMap.forEach(fn => {
