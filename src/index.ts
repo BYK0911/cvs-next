@@ -230,6 +230,27 @@ export class Painter {
   createPattern () {
     return this.ctx.createPattern(...arguments);
   }
+
+  radiusRect (x:number, y: number, w: number, h: number, rx = 0, ry = 0) {
+    if (rx === 0 && ry === 0) {
+      this.rect(x, y, w, h)
+    } else {
+      this.mt(x + rx, y)
+        .lt(x + w - rx, y)
+        .qt(x + w, y, x + w, y + ry)
+        .lt(x + w, y + h - ry)
+        .qt(x + w, y + h, x + w - rx, y + h)
+        .lt(x + rx, y + h)
+        .qt(x, y+h, x, y + h - ry)
+        .lt(x, y + ry)
+        .qt(x, y, x + rx, y)
+    }
+    return this
+  }
+  
+  toDataURL () {
+    return this.canvas.toDataURL()
+  }
 }
 
 // chain method
